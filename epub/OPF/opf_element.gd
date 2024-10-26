@@ -1,6 +1,17 @@
 class_name OpfElement extends RefCounted
+
+var all_elements: Array[OpfElement]: 
+	get():
+		var elements: Array[OpfElement] = [self]
+		for elem: OpfGeneralElement in self.children:
+			elements.append_array(elem.all_elements)
+		
+		return elements
+
 var children: Array[OpfGeneralElement]
+
 var node: XMLNode
+
 func _init(_node: XMLNode) -> void:
 	self.node = _node
 	self.children = self.node.children.map(OpfGeneralElement.new.bind(self))
@@ -79,6 +90,10 @@ func test_properties(tag, attrs: Array[String], kv_attrs: Dictionary, text):
 	if text != null and self.text != text:
 		return false 
 	return true
+
+
+
+
 ## Traverses the element tree starting from itself. [param depth] is the maximum depth to traverse. 
 ## If [param depth] is -1, the entire tree will be traversed. A [param depth] of 0 will return only 
 ## the initial element, while a [param depth] of 1 will include the initial element and its 
