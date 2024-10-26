@@ -7,6 +7,35 @@ func _init(_node: XMLNode) -> void:
 # ====================================================== #
 #                        METHODS                         #
 # ====================================================== #
+## Returns the first [OpfElement] that matches the provided parameters.
+## [br][br]
+## [param tag]: The expected tag name to match.[br]
+## [param attrs]: An array of attribute names that must be present (default is an empty array).[br]
+## [param kv_attrs]: A dictionary of key-value pairs to match against attributes (default is an empty dictionary).[br]
+## [param text]: The expected text content to match (default is [code]null[/code]).[br]
+## [br]
+## Returns the first matching [OpfElement] or [code]null[/code] if no match is found. See 
+## [method test_properties] for further documentation.
+func find(
+	tag, 
+	attrs: Array[String] = [], 
+	kv_attrs: Dictionary = {}, 
+	text = null
+) -> OpfGeneralElement:
+	for element: OpfElement in self.all_elements:
+		if element.test_properties(tag, attrs, kv_attrs, text):
+			return element
+	return null
+
+## Returns the an [Array] of [OpfElement] that matches the provided parameters.
+## See [method find] for documentation.
+func findall(
+	tag, 
+	attrs: Array[String] = [], 
+	kv_attrs: Dictionary = {}, 
+	text = null
+) -> Array[OpfElement]:
+	return self.all_elements.filter(func(e: OpfElement): return e.test_properties(tag, attrs, kv_attrs, text))
 ## Tests the properties of the current object against the specified criteria.
 ## [br][br]
 ## [param tag] is the expected tag name. Set [param tag] to [code]null[/code] if you wish not to test for tag.[br]
