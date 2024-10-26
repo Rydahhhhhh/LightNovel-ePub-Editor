@@ -1,6 +1,6 @@
 extends Control
 
-signal formatted
+signal book_saved
 
 var book: Epub
 
@@ -25,23 +25,29 @@ func _ready() -> void:
 	return
 	
 func format_epub(file_path: String):
+	return
 	book = Epub.new(file_path)
-	book.title = "DANMACHI"
-	await formatted
+	book.format_as_ln()
+	
+	await book_saved
 
 func format_epubs(file_paths):
+	return
 	for file_path in file_paths:
 		format_epub(file_path)
 
 func select_file():
+	return
 	select_dialog.popup()
 
 func save_file():
-	save_dialog.popup()
+	pass
+	#save_dialog.popup()
 
 func save_location_selected(file_path: String):
+	return
 	if book == null:
 		print("null epub")
 		return
 	book.save(file_path)
-	formatted.emit()
+	book_saved.emit()

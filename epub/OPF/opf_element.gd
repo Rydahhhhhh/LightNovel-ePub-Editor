@@ -15,6 +15,31 @@ var node: XMLNode
 func _init(_node: XMLNode) -> void:
 	self.node = _node
 	self.children = self.node.children.map(OpfGeneralElement.new.bind(self))
+
+func _get(property: StringName) -> Variant:
+	match property:
+		"tag":
+			return self.node.name
+		"attrs":
+			return self.node.attributes
+		"text":
+			return self.node.content
+	
+	return
+
+func _set(property: StringName, value: Variant) -> bool:
+	match property:
+		"tag":
+			self.node.name = value
+			return true
+		"attrs":
+			self.node.attributes = value
+			return true
+		"text":
+			self.node.content = value
+			return true
+	return false
+
 # ====================================================== #
 #                        METHODS                         #
 # ====================================================== #
