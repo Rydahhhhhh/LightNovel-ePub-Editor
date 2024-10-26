@@ -33,28 +33,12 @@ func _init(_epub_file: String) -> void:
 		print('failed')
 		return
 	
-	self._title = EpubPropertyTitle.new(self.xml)
-	self._language = EpubPropertyLanguage.new(self.xml)
-	self._description = EpubPropertyDescription.new(self.xml)
-	self._series = EpubPropertySeries.new(self.xml)
-	self._genres = EpubPropertySubjects.new(self.xml)
-	self._publicationDate = EpubPropertyPublicationDate.new(self.xml)
-	self._modificationDate = EpubPropertyModificationDate.new(self.xml)
-	#self._collections = EpubPropertyCollections.new(self.xml)
+	Title = self.opf_root.primary_title()
+
 	return
 
-func _get(property: StringName) -> Variant:
-	var internal_prop = "_%s" % property.to_lower()
-	if internal_prop in self:
-		return self.get(internal_prop).text
+func format_as_ln():
 	return
-
-func _set(property: StringName, value: Variant) -> bool:
-	var internal_prop = "_%s" % property.to_lower()
-	if internal_prop in self:
-		self.get(internal_prop).text = value
-		return true
-	return false
 
 func save(destination = null, overwrite: bool = false):
 	if not overwrite and FileAccess.file_exists(destination):
@@ -74,20 +58,4 @@ func save(destination = null, overwrite: bool = false):
 			
 		writer.close()
 		reader.close()
-	
 	return
-
-
-
-
-
-	#func _get_elements():
-		#return
-#
-#
-	#func _get_element():
-#
-#
-		##ElementTree.SubElement(self.xml_metadata, "meta", attrib={"refines": collection_id, "property": "display-seq"}).text = str(display_seq)
-#
-#
