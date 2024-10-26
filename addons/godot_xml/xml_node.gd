@@ -93,14 +93,13 @@ func dump_str(
 
 
 func _to_string():
-	var attr_strs = []
-	for key in self.attributes:
-		attr_strs.append('%s="%s"' % [key, self.attributes[key]])
-	
-	return "<%s %s> %s" % [
+	return "<XMLNode name=%s attributes=%s content=%s standalone=%s children=%s>" % [
 		self.name,
-		" ".join(attr_strs),
-		self.content,
+		"{...}" if len(self.attributes) > 0 else "{}",
+		'"..."' if len(self.content) > 0 else '""',
+		"[...]" if len(self.cdata) > 0 else "[]",
+		self.standalone,
+		"[...]" if len(self.children) > 0 else "[]"
 	]
 
 
@@ -108,10 +107,7 @@ func _to_string():
 func _get(property: StringName):
 	if not self._node_props_initialized:
 		self._initialize_node_properties()
-	
-	if property in self.attributes:
-		return self.attributes[property]
-	
+
 	if (
 		property not in KNOWN_PROPERTIES
 		and property in self._node_props
@@ -163,7 +159,7 @@ func _dump() -> String:
 		attribute_string += " "
 
 		for attribute_key in self.attributes:
-			var attribute_value = self.attributes.get(attribute_key)
+			var attribute_value := self.attributes.get(attribute_key)
 
 			if attribute_value is String:
 				attribute_value = attribute_value.xml_escape(true)
@@ -190,7 +186,7 @@ func _dump_pretty(indent_level: int, indent_length: int) -> String:
 	var indent_string := " ".repeat(indent_level * indent_length)
 	var indent_next_string := indent_string + " ".repeat(indent_length)
 	var attribute_string := ""
-	var content_string := self.content.xml_escape() if not self.content.is_empty() else ""
+	var content_string := "\n" + indent_next_string + self.content.xml_escape() if not self.content.is_empty() else ""
 	var children_string := ""
 	var cdata_string := ""
 
@@ -210,12 +206,12 @@ func _dump_pretty(indent_level: int, indent_length: int) -> String:
 		cdata_string += "\n" + indent_next_string + (
 			"<![CDATA[%s]]>" % cdata_content.replace("]]>", "]]]]>\n%s<![CDATA[>" % indent_next_string)
 		)
-	
+
 	if self.standalone:
 		return indent_string + "<" + self.name + attribute_string + "/>"
 	else:
 		return (
 			indent_string + "<" + self.name + attribute_string + ">" +
 			content_string + cdata_string + children_string +
-			"</" + self.name + ">"
+			"\n" + indent_string + "</" + self.name + ">"
 		)
