@@ -36,6 +36,26 @@ func findall(
 	text = null
 ) -> Array[OpfElement]:
 	return self.all_elements.filter(func(e: OpfElement): return e.test_properties(tag, attrs, kv_attrs, text))
+
+func create_child(
+	tag: String, 
+	attrs: Dictionary = {}, 
+	text: String = ""
+) -> OpfElement:
+	var elem = OpfElement.new(XMLNode.new())
+	elem.tag = tag
+	elem.attrs = attrs
+	elem.text = text
+	
+	self.add_child(elem)
+	
+	return elem
+
+func add_child(element: OpfElement) -> OpfElement:
+	self.children.append(element)
+	self.node.children.append(element.node)
+	return element
+
 ## Tests the properties of the current object against the specified criteria.
 ## [br][br]
 ## [param tag] is the expected tag name. Set [param tag] to [code]null[/code] if you wish not to test for tag.[br]
