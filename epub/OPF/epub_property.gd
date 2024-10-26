@@ -1,7 +1,10 @@
-class_name OpfMetadataElement extends OpfGeneralElement
-
+class_name EpubProperty extends OpfGeneralElement
+## https://readium.org/architecture/streamer/parser/metadata.html
 # ====================================================== #
 #                        METHODS                         #
+# ====================================================== #
+# ====================================================== #
+#                       INHERITORS                       #
 # ====================================================== #
 # ====================================================== #
 #                      END OF FILE                       #
