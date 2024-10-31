@@ -1,19 +1,21 @@
 class_name EpubProperty extends RefCounted
 ## https://readium.org/architecture/streamer/parser/metadata.html
 
-var value: get = _get_value, set = _set_value
-var element: OpfGeneralElement
 
 var xml_root: XMLTree
 var xml_metadata: XMLTree
 
+var value: Variant: get = _get_value, set = _set_value
+var node: XMLTree
 # ====================================================== #
 #                        METHODS                         #
 # ====================================================== #
 func _get_value():
+	push_warning("This should be overridden")
 	return
 
 func _set_value(to):
+	push_warning("This should be overridden")
 	return
 
 # ====================================================== #
