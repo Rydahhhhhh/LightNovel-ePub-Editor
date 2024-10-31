@@ -3,7 +3,7 @@ class_name Epub extends RefCounted
 
 var epub_file: String
 var opf_path: String
-var opf_root: OpfRoot
+var xml_root: XMLTree
 
 
 var Title
@@ -26,18 +26,18 @@ func _init(_epub_file: String) -> void:
 				var opf_data: PackedByteArray = reader.read_file(self.opf_path)
 				
 				if opf_data != null:
-					self.opf_root = OpfRoot.from_buffer(opf_data)
+					self.xml_root = XMLTree.parse_buffer(opf_data)
 	reader.close()
 	
-	if self.xml == null:
+	if self.xml_root == null:
 		print('failed')
 		return
 	
-	Title = self.opf_root.primary_title()
-
-	return
-
-func format_as_ln():
+	self.title = EpubProperty.Title.new(self.xml_root)
+	self.series = EpubProperty.Series.new(self.xml_root)
+	#self.seriesIndex = EpubProperty.SeriesIndex.new(self.series)
+	self.description = EpubProperty.Description.new(self.xml_root)
+	self.language = EpubProperty.Language.new(self.xml_root)
 	return
 
 func save(destination = null, overwrite: bool = false):
@@ -52,10 +52,15 @@ func save(destination = null, overwrite: bool = false):
 			writer.start_file(file)
 			
 			if file.ends_with(".opf"):
-				writer.write_file(self.xml.root.dump_buffer(true, 0, 2))
+				writer.write_file(self.opf_root.dump_buffer(true, 0, 2))
 			else:
 				writer.write_file(reader.read_file(file))
 			
 		writer.close()
 		reader.close()
+	
 	return
+
+# ====================================================== #
+#                      END OF FILE                       #
+# ====================================================== #
