@@ -4,6 +4,7 @@ var id:
 	get():
 		return self.attrs.get("id")
 	set(to):
+		assert(len(self.findall(null, [], {"id": to})) == 0)
 		self.attrs["id"] = to
 
 var index:
@@ -20,7 +21,7 @@ var root: OpfRoot
 
 func _init(_node: XMLNode, _root: OpfRoot) -> void:
 	super(_node)
-	self.root = root
+	self.root = _root
 
 # ====================================================== #
 #                        METHODS                         #
@@ -45,7 +46,6 @@ func findall(
 
 
 ## Either finds the matching element or creates it if it doesn't exist
-## See [method find] for parameter documentation.
 func find_or_create(
 	tag, 
 	attrs: Array[String] = [], 
@@ -55,8 +55,10 @@ func find_or_create(
 	
 	var element = self.find(tag, attrs, kv_attrs, text)
 	if element == null:
+		if text == null:
+			text = ""
 		element = self.root.metadata.create_child(tag, kv_attrs, text)
-	
+		print('created', ": ", tag)
 	return element
 
 func id_exists(id: String):

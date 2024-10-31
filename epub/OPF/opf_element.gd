@@ -8,13 +8,16 @@ var all_elements: Array[OpfElement]:
 		
 		return elements
 
-var children: Array[OpfGeneralElement]
+var children: Array[OpfGeneralElement] = []
 
 var node: XMLNode
 
 func _init(_node: XMLNode) -> void:
 	self.node = _node
-	self.children = self.node.children.map(OpfGeneralElement.new.bind(self))
+	
+	# An empty array can't be assigned to a typed array ;\
+	for child: OpfGeneralElement in self.node.children.map(OpfGeneralElement.new.bind(self.root)):
+		self.children.append(child)
 
 func _get(property: StringName) -> Variant:
 	match property:
@@ -24,7 +27,8 @@ func _get(property: StringName) -> Variant:
 			return self.node.attributes
 		"text":
 			return self.node.content
-	
+		"root":
+			return self if self is OpfRoot else self.root
 	return
 
 func _set(property: StringName, value: Variant) -> bool:
@@ -78,7 +82,7 @@ func create_child(
 	attrs: Dictionary = {}, 
 	text: String = ""
 ) -> OpfElement:
-	var elem = OpfElement.new(XMLNode.new())
+	var elem = OpfGeneralElement.new(XMLNode.new(), self.root)
 	elem.tag = tag
 	elem.attrs = attrs
 	elem.text = text
@@ -110,13 +114,22 @@ func test_properties(tag, attrs: Array[String], kv_attrs: Dictionary, text):
 		return false
 	if not self.attrs.has_all(attrs + kv_attrs.keys()):
 		return false
-	if not kv_attrs.keys().all(func(k): return kv_attrs[k] == self.attributes[k]):
+	
+	var match_attrs = func(k): 
+		var v1 = kv_attrs[k]
+		var v2 = self.attrs[k]
+		if k in ["refines", "id"]:
+			if v1 is String and v1.begins_with("#"):
+				v1 = v1.substr(1)
+			if v2 is String and v2.begins_with("#"):
+				v2 = v2.substr(1)
+		
+		return v1 == v2
+	if not kv_attrs.keys().all(match_attrs):
 		return false
 	if text != null and self.text != text:
 		return false 
 	return true
-
-
 
 
 ## Traverses the element tree starting from itself. [param depth] is the maximum depth to traverse. 
