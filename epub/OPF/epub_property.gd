@@ -1,4 +1,4 @@
-class_name EpubProperty extends OpfGeneralElement
+class_name EpubProperty extends RefCounted
 ## https://readium.org/architecture/streamer/parser/metadata.html
 
 var value: get = _get_value, set = _set_value
