@@ -4,8 +4,8 @@ class_name EpubProperty extends RefCounted
 var value: get = _get_value, set = _set_value
 var element: OpfGeneralElement
 
-func _init(_root: OpfRoot) -> void:
-	self.root = _root
+var xml_root: XMLTree
+var xml_metadata: XMLTree
 
 # ====================================================== #
 #                        METHODS                         #
