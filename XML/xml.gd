@@ -6,7 +6,7 @@ class_name Xml
 ## The file at the specified [code]path[/code] [b]must[/b] be readable.
 ## File content [b]must[/b] be a syntactically valid XML document.
 static func parse_file(path: String) -> XMLTree:
-	var file = FileAccess.open(path, FileAccess.READ)
+	var file := FileAccess.open(path, FileAccess.READ)
 	var xml: PackedByteArray = file.get_as_text().to_utf8_buffer()
 	file = null
 	
@@ -60,12 +60,12 @@ static func _parse(xml: PackedByteArray) -> XMLTree:
 
 			# same here
 			elif node_type == XMLParser.NODE_ELEMENT_END:
-				var last = queue.pop_back()  # get-remove last unclosed node
+				var last: XMLTree = queue.pop_back()  # get-remove last unclosed node
 
 				# if we got a closing node, but it's name is not the same as opening one, it's an error
 				if node.tag != last.tag:
 					push_error(
-						"Invalid closing tag: started with %s but ended with %s. Ignoring (output may be incorrect)." % [last.name, node.name]
+						"Invalid closing tag: started with %s but ended with %s. Ignoring (output may be incorrect)." % [last.tag, node.tag]
 					)
 					# instead of break'ing here we just continue, since often invalid name is just a typo
 					continue
@@ -90,7 +90,7 @@ static func _parse(xml: PackedByteArray) -> XMLTree:
 		var names: Array[String] = []
 
 		for node in queue:
-			names.append(node.name)
+			names.append(node.tag)
 
 		push_error("The following nodes were not closed: %s" % ", ".join(names))
 	
@@ -131,12 +131,14 @@ static func _make_node(queue: Array[XMLTree], parser: XMLParser) -> Variant:
 			return
 			
 		XMLParser.NODE_COMMENT:
-			queue.back().add_comment(parser.get_node_name().strip_edges())
+			var last_node: XMLTree = queue.back()
+			last_node.add_comment(parser.get_node_name().strip_edges())
 			
 			return 
 		XMLParser.NODE_CDATA:
 			if queue.is_empty():
 				return
-			queue.back().cdata.append(parser.get_node_name().strip_edges())
+			var last_node: XMLTree = queue.back()
+			last_node.cdata.append(parser.get_node_name().strip_edges())
 			return
 	return

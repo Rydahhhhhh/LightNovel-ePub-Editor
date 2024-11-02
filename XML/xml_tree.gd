@@ -12,7 +12,7 @@ var text_content: String = ""
 var attributes: Dictionary = {}: get = _get_attributes
 var children: Array[XMLTree] = []
 var standalone: bool
-var cdata = []
+var cdata: Array[String] = []
 var comments: Array[Array] = []
 
 var parent: XMLTree:
@@ -46,8 +46,13 @@ func _init(_parent: XMLTree = null, _tag: String = "", _text_cotent := "", _attr
 	self.tag = _tag
 	self.text_content = _text_cotent
 	
-	if _attributes.has("refines") and not _attributes["refines"].begins_with("#"):
-		_attributes["refines"] = "#" + _attributes["refines"]
+	# TODO move this outside of xml_tree 
+	if _attributes.has("refines"):
+		var refines_str: String = attributes["refines"]
+		if not refines_str.begins_with("#"):
+			refines_str = "#" + refines_str
+		
+		_attributes["refines"] = refines_str
 	
 	self.attributes = _attributes
 	
@@ -62,24 +67,24 @@ func _init(_parent: XMLTree = null, _tag: String = "", _text_cotent := "", _attr
 ## ====================================================== ##
 
 ## Binds the value of a given attribute to callable
-func bind_attribute(attribute: String, fn: Callable):
+func bind_attribute(attribute: String, fn: Callable) -> void:
 	self._bindings[attribute] = fn
 
-func _get_attributes():
-	for binded_attribute in self._bindings:
-		var fn = self._bindings[binded_attribute]
+func _get_attributes() -> Dictionary:
+	for binded_attribute: String in self._bindings:
+		var fn: Callable = self._bindings[binded_attribute]
 		attributes[binded_attribute] = fn.call()
 	
 	return attributes
 
-func add_comment(what: String, index: int = -1):
-	if index == -1:
-		index = len(self.comments)
-	assert(index > -1)
-	if index >= len(self.comments):
-		self.comments.resize(index + 1)
+func add_comment(what: String, child_index: int = -1) -> void:
+	if child_index == -1:
+		child_index = len(self.comments)
+	assert(child_index > -1)
+	if child_index >= len(self.comments):
+		self.comments.resize(child_index + 1)
 	
-	self.comments[index].append(what)
+	self.comments[child_index].append(what)
 	return
 
 # ================== #
@@ -124,14 +129,14 @@ func get_descendants(include_self := true) -> Array[XMLTree]:
 func id_exists(id: String) -> bool:
 	return self.root.get_element_by_id(id) != null
 
-func generate_id():
+func generate_id() -> String:
 	var node_name: String = self.tag
 	
 	if node_name.contains(":"):
 		node_name = node_name.split(":")[-1]
 	
-	var i = 1
-	var valid_id = node_name + str(i)
+	var i := 1
+	var valid_id := node_name + str(i)
 	
 	while self.id_exists(valid_id):
 		i += 1
@@ -163,7 +168,7 @@ func dump_file(
 	indent_level: int = 0,
 	indent_length: int = 2,
 ) -> void:
-	var file = FileAccess.open(path, FileAccess.WRITE)
+	var file := FileAccess.open(path, FileAccess.WRITE)
 	var xml: String = self.dump_str(pretty, indent_level, indent_length)
 	file.store_string(xml)
 	file = null
@@ -198,16 +203,18 @@ func dump_str(
 func _dump() -> String:
 	var attribute_string := ""
 	var children_string := ""
-	var cdata_string = ""
+	var cdata_string := ""
 
 	if not self.attributes.is_empty():
 		attribute_string += " "
 	
-		for attribute_key in self.attributes:
-			var attribute_value = self.attributes.get(attribute_key)
-
+		for attribute_key: String in self.attributes:
+			var attribute_value: Variant = self.attributes.get(attribute_key)
+			
 			if attribute_value is String:
-				attribute_value = attribute_value.xml_escape(true)
+				# Appeasing godots UNSAFE_METHOD_ACCESS warning
+				var attribute_value_str: String = attribute_value 
+				attribute_value = attribute_value_str.xml_escape(true)
 
 			attribute_string += '{key}="{value}"'.format({"key": attribute_key, "value": attribute_value})
 
@@ -218,24 +225,24 @@ func _dump() -> String:
 		cdata_string += "<![CDATA[%s]]>" % cdata_content.replace("]]>", "]]]]><![CDATA[>")
 
 	if self.standalone:
-		return "<" + self.name + attribute_string + "/>"
+		return "<" + self.tag + attribute_string + "/>"
 	else:
 		return (
-			"<" + self.name + attribute_string + ">" +
-			self.content.xml_escape() + cdata_string + children_string +
-			"</" + self.name + ">"
+			"<" + self.tag + attribute_string + ">" +
+			self.text_content.xml_escape() + cdata_string + children_string +
+			"</" + self.tag + ">"
 		)
 
 func _dump_pretty(indent_level: int, indent_length: int) -> String:
 	var indent_string := " ".repeat(indent_level * indent_length)
 	var indent_next_string := " ".repeat((indent_level + 1) * indent_length)
 	var attribute_string := ""
-	var content_string = self.text_content.xml_escape() if not self.text_content.is_empty() else ""
+	var content_string := self.text_content.xml_escape() if not self.text_content.is_empty() else ""
 	var children_string := ""
 	var cdata_string := ""
 
 	if not self.attributes.is_empty():
-		var attribute_keys = self.attributes.keys()
+		var attribute_keys := self.attributes.keys()
 		attribute_keys.sort()
 		
 		# This functionality is for epub opf files, 
@@ -245,18 +252,20 @@ func _dump_pretty(indent_level: int, indent_length: int) -> String:
 			attribute_keys.erase("refines")
 			attribute_keys.push_front("refines")
 		
-		for attribute_key in attribute_keys:
-			var attribute_value = self.attributes.get(attribute_key)
+		for attribute_key: String in attribute_keys:
+			var attribute_value: Variant = self.attributes.get(attribute_key)
 
 			if attribute_value is String:
-				attribute_value = attribute_value.xml_escape(true)
+				# Appeasing godots UNSAFE_METHOD_ACCESS warning
+				var attribute_value_str: String = attribute_value 
+				attribute_value = attribute_value_str.xml_escape(true)
 
 			attribute_string += ' {key}="{value}"'.format({"key": attribute_key, "value": attribute_value})
 	
-	var comment_strings = self.comments.duplicate()
+	var comment_strings := self.comments.duplicate()
 	for child: XMLTree in self.children:
 		if not comment_strings.is_empty():
-			var comment_string_arr = comment_strings.pop_front()
+			var comment_string_arr: String = comment_strings.pop_front()
 			for comment_string in comment_string_arr:
 				if comment_string != "":
 					if comment_string == self.BLANK:
@@ -267,7 +276,7 @@ func _dump_pretty(indent_level: int, indent_length: int) -> String:
 	
 		if child == self.children[-1]:
 			while not comment_strings.is_empty():
-				var comment_string_arr = comment_strings.pop_front()
+				var comment_string_arr: String = comment_strings.pop_front()
 				for comment_string in comment_string_arr:
 					if comment_string != "":
 						if comment_string == self.BLANK:
@@ -282,7 +291,7 @@ func _dump_pretty(indent_level: int, indent_length: int) -> String:
 	else:
 		return ( 
 			indent_string + "<" + self.tag + attribute_string + ">" +
-			content_string + children_string + 
+			content_string + children_string + cdata_string + 
 			 "</" + self.tag + ">"
 		)
 
