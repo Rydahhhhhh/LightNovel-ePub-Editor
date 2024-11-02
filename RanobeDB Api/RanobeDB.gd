@@ -147,4 +147,4 @@ func fetch_book_id(id: String):
 	else:
 		print("Using cache for '%s'" % query)
 
-	return book_query_cache.data
+	return book_query_cache.data.book
