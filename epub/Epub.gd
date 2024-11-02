@@ -55,7 +55,7 @@ func save(destination = null, overwrite: bool = false):
 			writer.start_file(file)
 			
 			if file.ends_with(".opf"):
-				writer.write_file(self.xml.root.dump_buffer(true, 0, 2))
+				writer.write_file(self.xml_root.dump_buffer(true, 0, 2))
 			else:
 				writer.write_file(reader.read_file(file))
 			

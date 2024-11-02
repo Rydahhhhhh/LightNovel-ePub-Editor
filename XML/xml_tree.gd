@@ -78,8 +78,12 @@ func _get_attributes():
 	return attributes
 
 func add_comment(what: String, index: int = -1):
+	if index == -1:
+		index = len(self.comments)
+	assert(index > -1)
 	if index >= len(self.comments):
 		self.comments.resize(index + 1)
+	
 	self.comments[index].append(what)
 	return
 
