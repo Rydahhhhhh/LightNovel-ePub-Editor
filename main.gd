@@ -97,6 +97,7 @@ func update_book(randobe_id: int):
 		book.add_genre(tag.name)
 	
 	for data in series_data.books:
-		book.series_index = data.sort_order
+		if data.title == book.title:
+			book.series_index = data.sort_order
 	
 	return
