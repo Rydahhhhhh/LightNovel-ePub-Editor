@@ -17,11 +17,6 @@ This project is a tool for parsing and editing EPUB files, primarily geared towa
 
 This project is built in GDScript and requires [Godot Engine](https://godotengine.org/).
 
-1. **Clone the Repository**:
-   ```bash
-   git clone https://github.com/yourusername/epub-light-novel-parser.git
-   ```
-2. **Open in Godot**: Open the cloned project in Godot to explore or run the parser and editor.
 
 ## Roadmap
 
