@@ -9,7 +9,6 @@ var root: XMLTree
 
 var tag: StringName
 var text_content: String = ""
-var _attributes: Dictionary = {}
 var attributes: Dictionary = {}: get = _get_attributes
 var children: Array[XMLTree] = []
 var standalone: bool
