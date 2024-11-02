@@ -148,3 +148,18 @@ func fetch_book_id(id: String):
 		print("Using cache for '%s'" % query)
 
 	return book_query_cache.data.book
+
+func fetch_series_id(id: String):
+	var query = "series/%s" % id
+	
+	var series_query: Dictionary = cache.get_or_add("query", {})
+	var series_query_cache: RanobeCache = series_query.get_or_add(query, RanobeCache.new())
+	
+	if series_query_cache.invalid:
+		var data = (await request(query))
+		series_query_cache.data = data
+		update_cache()
+	else:
+		print("Using cache for '%s'" % query)
+
+	return series_query_cache.data.series
