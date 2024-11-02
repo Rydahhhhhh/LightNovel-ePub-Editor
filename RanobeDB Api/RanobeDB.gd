@@ -23,7 +23,7 @@ var cache: Dictionary:
 		cache.Loaded = true
 		return cache
 
-func update_cache():
+func update_cache() -> void:
 	var _cache = cache
 	_cache.erase("Loaded")
 	
