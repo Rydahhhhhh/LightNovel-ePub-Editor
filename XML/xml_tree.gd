@@ -22,10 +22,6 @@ var parent: XMLTree:
 			self.parent.children.remove_at(self.index)
 		parent = to
 		
-		#if parent != null and to != self.parent:
-			#assert(self not in parent.children)
-			#parent.children.append(self)
-
 		if parent != null and self not in parent.children:
 			parent.children.append(self)
 
