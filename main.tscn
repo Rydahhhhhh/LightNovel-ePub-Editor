@@ -1,0 +1,42 @@
+[gd_scene load_steps=2 format=3 uid="uid://b423ll1gqn71t"]
+
+[ext_resource type="Script" path="res://main.gd" id="1_oxfcx"]
+
+[node name="Main" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_oxfcx")
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="CenterContainer"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer/VBoxContainer2"]
+layout_mode = 2
+
+[node name="Choose files" type="Button" parent="CenterContainer/VBoxContainer2/VBoxContainer"]
+layout_mode = 2
+text = "Choose file(s)"
+
+[node name="choose save" type="Button" parent="CenterContainer/VBoxContainer2/VBoxContainer"]
+layout_mode = 2
+text = "Choose save location"
+
+[node name="format" type="Button" parent="CenterContainer/VBoxContainer2/VBoxContainer"]
+layout_mode = 2
+text = "Format"
+
+[connection signal="pressed" from="CenterContainer/VBoxContainer2/VBoxContainer/Choose files" to="." method="select_file"]
+[connection signal="pressed" from="CenterContainer/VBoxContainer2/VBoxContainer/choose save" to="." method="save_file"]
+[connection signal="pressed" from="CenterContainer/VBoxContainer2/VBoxContainer/format" to="." method="_on_format_pressed"]
