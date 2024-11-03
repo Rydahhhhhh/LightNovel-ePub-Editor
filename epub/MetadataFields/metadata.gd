@@ -29,21 +29,21 @@ func _init(_root: XMLTree) -> void:
 	self.genres = GenresField.new(self.xml_root)
 
 func format() -> void:
-	var core_element = []
-	var refines = []
-	var collection = []
-	var calibre = []
+	var core_element := []
+	var refine_element := []
+	var collection := []
+	var calibre := []
 	
 	core_element.append(self.title.node)
-	refines.append(self.title["title-type_node"].node)
-	refines.append(self.title["sort_by_node"]._node_3x)
+	refine_element.append(self.title["title-type_node"].node)
+	refine_element.append(self.title["sort_by_node"]._node_3x)
 	
 	calibre.append(self.title["sort_by_node"]._node_2x)
 	
-	for creator in self.creators.value:
+	for creator: CreatorField in self.creators.value:
 		core_element.append(creator.node)
-		refines.append(creator["role_node"].node)
-		refines.append(creator["sort_by_node"].node)
+		refine_element.append(creator["role_node"].node)
+		refine_element.append(creator["sort_by_node"].node)
 	
 	core_element.append(self.identifier.node)
 	core_element.append(self.language.node)
@@ -60,18 +60,18 @@ func format() -> void:
 	calibre.append(self.series._node_2x)
 	calibre.append(self.series["index_node"]._node_2x)
 	
-	var sigil = self.find("meta", null, {"name": "Sigil version"})
+	var sigil := self.find("meta", null, {"name": "Sigil version"})
 	if sigil:
 		calibre.append(sigil)
 	
 	self.node.comments = []
 	
-	var i = 0
+	var i := 0
 	
 	self.node.add_comment("Core Bibliographic Metadata", i)
 
-	for node in core_element:
-		node.index = i
+	for a_node: XMLTree in core_element:
+		a_node.index = i
 		i += 1
 	
 	self.node.add_comment(XMLTree.BLANK, i)
@@ -83,8 +83,8 @@ func format() -> void:
 	self.node.add_comment(XMLTree.BLANK, i)
 	self.node.add_comment("Refined Metadata for Title and Creators", i)
 	
-	for node in refines:
-		node.index = i
+	for a_node: XMLTree in refine_element:
+		a_node.index = i
 		i += 1
 	
 	self.node.add_comment(XMLTree.BLANK, i)
@@ -92,7 +92,7 @@ func format() -> void:
 	self.mod_date.node.index = i
 	i += 1
 	
-	var cover = self.find("meta", null, {"name": "cover"})
+	var cover := self.find("meta", null, {"name": "cover"})
 	if cover:
 		self.node.add_comment(XMLTree.BLANK, i)
 		self.xml_metadata.add_comment("Cover Image", i)
@@ -102,15 +102,15 @@ func format() -> void:
 	self.node.add_comment(XMLTree.BLANK, i)
 	self.xml_metadata.add_comment("Series and Collection Metadata", i)
 	
-	for node in collection:
-		node.index = i
+	for a_node: XMLTree in collection:
+		a_node.index = i
 		i += 1
 	
 	self.node.add_comment(XMLTree.BLANK, i)
 	self.xml_metadata.add_comment("Calibre-specific Metadata", i)
 	
-	for node in calibre:
-		node.index = i
+	for a_node: XMLTree in calibre:
+		a_node.index = i
 		i += 1
 	
 	#self.node.add_comment(XMLTree.BLANK, i)
