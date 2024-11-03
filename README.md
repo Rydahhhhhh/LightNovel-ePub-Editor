@@ -3,7 +3,7 @@
 This project is a tool for parsing and editing EPUB files, primarily geared towards light novels. It includes functionality to:
 
 - Extract and modify metadata, such as title, genres, and description, from EPUB files.
-- Connect to [RanobeDB](https://ranobedb.org/) API to fetch metadata for light novels, enabling users to quickly populate or update metadata for their EPUB collections.
+- Connect to [RanobeDB](https://ranobedb.org/) API to fetch metadata for light novels.
 
 **Note**: The project is currently in a basic, early stage of development.
 
