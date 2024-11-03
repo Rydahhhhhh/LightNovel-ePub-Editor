@@ -27,10 +27,8 @@ func _init(_root: XMLTree) -> void:
 	self.publisher = PublisherField.new(self.xml_root)
 	self.identifier = IdentifierField.new(self.xml_root)
 	self.genres = GenresField.new(self.xml_root)
-	
-	self.format()
 
-func format():
+func format() -> void:
 	var core_element = []
 	var refines = []
 	var collection = []

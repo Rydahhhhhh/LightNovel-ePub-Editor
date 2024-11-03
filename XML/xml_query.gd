@@ -15,10 +15,9 @@ var _match_text: bool:
 
 ## [b]Note:[/b] [param tag] and [param text] are [b]not[/b] typed because typed variables aren't nullable.[br]
 ## [b]Written on stable version 4.3 this behavior may change in the future. [/b]
-@warning_ignore("untyped_declaration")
 func _init(
-	_tag, 
-	_text_content = null, 
+	_tag: Variant, 
+	_text_content: Variant = null, 
 	_kv_attrs: Dictionary = {},
 	_attrs: Array[String] = []
 ) -> void:

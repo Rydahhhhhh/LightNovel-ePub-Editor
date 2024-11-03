@@ -11,7 +11,7 @@ var title: String: get = _get_title, set = _set_title
 var title_sort: String: get = _get_title_sort, set = _set_title_sort
 var creators: Array: get = _get_creators
 var series: String: get = _get_series, set = _set_series
-var series_index: int: get = _get_series_index, set = _set_series_index
+var series_index: String: get = _get_series_index, set = _set_series_index
 var description: String: get = _get_description, set = _set_description
 var genres: Array: get = _get_genres
 var language: String: get = _get_language, set = _set_language
@@ -42,121 +42,144 @@ func _init(_epub_file: String) -> void:
 	print("DONE")
 	return
 
-func save(destination = null, overwrite: bool = false):
+func save(destination: String, format := false, overwrite := false) -> int:
 	if not overwrite and FileAccess.file_exists(destination):
-		return
+		return ERR_ALREADY_EXISTS
 	
 	var reader := ZIPReader.new()
 	var writer := ZIPPacker.new()
 	
-	if reader.open(self.epub_file) == OK and writer.open(destination) == OK:
-		self._metadata.format()
-		for file in reader.get_files():
-			writer.start_file(file)
-			
-			if file.ends_with(".opf"):
-				writer.write_file(self.xml_root.dump_buffer(true, 0, 2))
-			else:
-				writer.write_file(reader.read_file(file))
-			
-		writer.close()
-		reader.close()
+	var reader_open_err := reader.open(self.epub_file)
+	if reader_open_err != OK:
+		return reader_open_err
 	
+	var writer_open_err := writer.open(destination)
+	if writer_open_err != OK:
+		return writer_open_err
+	
+	if format:
+		self._metadata.format()
+	
+	for file in reader.get_files():
+		var writer_start_err := writer.start_file(file)
+		if writer_start_err != OK:
+			return writer_start_err
+		
+		var writer_write_err := FAILED
+		if file.ends_with(".opf"):
+			writer_write_err = writer.write_file(self.xml_root.dump_buffer(true, 0, 2))
+		else:
+			writer_write_err = writer.write_file(reader.read_file(file))
+		
+		if writer_write_err != OK:
+			return writer_write_err
+		
+	writer.close()
+	reader.close()
+
+	return OK
+
+## Updates the ePub file with the edited data
+func update_file() -> void:
+	self.save(self.epub_file, true)
 	return
 
-
+# ====================================================== #
+#                   SETTERS & GETTERS                    #
+# ====================================================== #
 func _to_string() -> String:
 	self._metadata.format()
 	return str(self._metadata.node)
 
-func _get_title():
+func _get_title() -> String:
 	return self._metadata.title.value
 
-func _set_title(to: String):
+func _set_title(to: String) -> void:
 	self._metadata.title.value = to
 	return
 
-func _get_series():
+func _get_series() -> String:
 	return self._metadata.series.value
 
-func _set_series(to):
+func _set_series(to: String) -> void:
 	self._metadata.series.value = to
 	return
 
-func _get_description():
+func _get_description() -> String:
 	return self._metadata.description.value
 
-func _set_description(to):
+func _set_description(to: String) -> void:
 	self._metadata.description.value = to
 	return
 
-func _get_language():
+func _get_language() -> String:
 	return self._metadata.language.value
 
-func _set_language(to):
+func _set_language(to: String) -> void:
 	self._metadata.language.value = to
 	return
 
-func _get_publicationDate():
+func _get_publicationDate() -> String:
 	return self._metadata.pub_date.value
 
-func _set_publicationDate(to):
+func _set_publicationDate(to: String) -> void:
 	self._metadata.pub_date.value = to
 	return
 
-func _get_title_sort():
+func _get_title_sort() -> String:
 	return self._metadata.title.sort_by
-func _set_title_sort(to):
+
+func _set_title_sort(to: String) -> void:
 	self._metadata.title.sort_by = to
 	return 
 
-
-func _get_series_index():
+func _get_series_index() -> String:
 	return self._metadata.series.index
-func _set_series_index(to):
-	print('setters triggered')
+
+func _set_series_index(to: String) -> void:
 	self._metadata.series.index = to
 	return 
 
-func _get_rights():
+func _get_rights() -> String:
 	return self._metadata.rights.value
-func _set_rights(to):
+
+func _set_rights(to: String) -> void:
 	self._metadata.rights.value = to
 	return
 
-func _get_lastModified():
+func _get_lastModified() -> String:
 	return self._metadata.mod_date.value
 
-func _set_lastModified(to):
+func _set_lastModified(to: String) -> void:
 	self._metadata.mod_date.value = to
 	return
 
-func _get_identifier():
+func _get_identifier() -> String:
 	return self._metadata.identifier.value
 
-func _set_identifier(to):
+func _set_identifier(to: String) -> void:
 	self._metadata.identifier.value = to
 	return
 
-func add_creator(name: String, role: String, sort: String = ""):
+func add_creator(name: String, role: String, sort: String = "") -> void:
 	self._metadata.creators.add_creator(name, role, sort)
 	return
 
-func clear_creators():
+func clear_creators() -> void:
 	self._metadata.creators.clear()
 	return
 
-func add_genre(name: String):
+func add_genre(name: String) -> void:
 	self._metadata.genres.add_genre(name)
 	return
 
-func _get_genres():
+func _get_genres() -> Array[GenreField]:
 	return self._metadata.genres.value
 
-func _get_creators():
+func _get_creators() -> Array[CreatorField]:
 	return self._metadata.creators.value
 
-func _get_collections():
+func _get_collections() -> Array:
 	return []
 # ====================================================== #
 #                      END OF FILE                       #

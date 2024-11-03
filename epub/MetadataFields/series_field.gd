@@ -1,7 +1,7 @@
 class_name SeriesField extends EpubProperty.DoubleProperty
 const name = "EpubSeries"
 
-var index:
+var index: String:
 	get():
 		return self["index_node"].value
 	set(to):
@@ -52,10 +52,8 @@ func _init(_root: XMLTree) -> void:
 			# EPUB 3.x
 			# The position of the publication is the value of the refine whose property has the value of group-position.
 			# If there is no series, try to parse calibre:series_index as in the EPUB 2.x case.
-			self.add_refiner(
-				self.find_or_create("meta", null, {"refines": self.id, "property": "group-position"})
-			),
+			self.find_or_create("meta", null, {"refines": self.id, "property": "group-position"}),
 			"1.00"
-		)
+		).refines(self)
 	)
 	return
