@@ -1,6 +1,10 @@
 [gd_scene load_steps=2 format=3 uid="uid://b423ll1gqn71t"]
 
-[ext_resource type="Script" path="res://main.gd" id="1_oxfcx"]
+<<<<<<< Updated upstream
+[ext_resource type="Script" uid="uid://bnxwx6v5k7un4" path="res://main.gd" id="1_oxfcx"]
+=======
+[ext_resource type="Script" uid="uid://l3xdvjmtvkil" path="res://main.gd" id="1_oxfcx"]
+>>>>>>> Stashed changes
 
 [node name="Main" type="Control"]
 layout_mode = 3

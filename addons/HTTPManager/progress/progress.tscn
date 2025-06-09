@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://bv5iovcvbaon5"]
 
-[ext_resource type="Script" path="res://addons/HTTPManager/progress/progress.gd" id="1_cngh1"]
+[ext_resource type="Script" uid="uid://d1rydfgltonq1" path="res://addons/HTTPManager/progress/progress.gd" id="1_cngh1"]
 
 [node name="Progress" type="Window"]
 initial_position = 2

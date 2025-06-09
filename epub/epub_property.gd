@@ -211,9 +211,9 @@ class DoubleProperty extends EpubProperty:
 	var _node_3x: XMLTree
 	var _default_value: Variant
 	
-	func _get_id() -> String:
+	func _get_id():
 		# Epub 2.x doesn't use id (Needs confirmation)
-		return self._node_3x.attributes.get("id")
+		return self._node_3x.attributes.get("id", null)
 
 	func _set_id(to: String) -> void:
 		if self.id != to:
