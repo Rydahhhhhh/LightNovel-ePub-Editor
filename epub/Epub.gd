@@ -32,13 +32,14 @@ func _init(_epub_file: String) -> void:
 				var opf_data: PackedByteArray = reader.read_file(self.opf_path)
 				if opf_data != null:
 					self.xml_root = Xml.parse_buffer(opf_data)
-		reader.close()
+	reader.close()
 	
 	if self.xml_root == null:
 		print('failed')
 		return
 	
 	self._metadata = Metadata.new(self.xml_root)
+	print("DONE")
 	return
 
 func save(destination: String, format := false, overwrite := false) -> int:

@@ -1,13 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://dq0l3g1vrbr0w"]
+[gd_scene load_steps=4 format=3 uid="uid://dq0l3g1vrbr0w"]
 
-[ext_resource type="Script" uid="uid://buhs236pvhsfd" path="res://addons/HTTPManager/example/HTTPManager-Example.gd" id="1_2hlte"]
-[ext_resource type="Script" uid="uid://br18vmwlpebgh" path="res://addons/HTTPManager/classes/HTTPManager.gd" id="2_o1fp1"]
-
-[sub_resource type="Resource" id="Resource_jarbm"]
-metadata/__load_path__ = "res://icon.svg"
-
-[sub_resource type="Resource" id="Resource_aqwwi"]
-metadata/__load_path__ = "res://icon.svg"
+[ext_resource type="Script" path="res://addons/HTTPManager/example/HTTPManager-Example.gd" id="1_2hlte"]
+[ext_resource type="Script" path="res://addons/HTTPManager/classes/HTTPManager.gd" id="2_o1fp1"]
+[ext_resource type="Texture2D" uid="uid://bead4mo500aiv" path="res://icon.svg" id="3_ryo4l"]
 
 [node name="HTTPManager-Example" type="Control"]
 layout_mode = 3
@@ -47,7 +42,7 @@ offset_left = 44.0
 offset_top = 279.0
 offset_right = 344.0
 offset_bottom = 579.0
-texture = SubResource("Resource_jarbm")
+texture = ExtResource("3_ryo4l")
 expand_mode = 2
 
 [node name="Label3" type="Label" parent="."]
@@ -64,7 +59,7 @@ offset_left = 417.0
 offset_top = 279.0
 offset_right = 717.0
 offset_bottom = 579.0
-texture = SubResource("Resource_aqwwi")
+texture = ExtResource("3_ryo4l")
 expand_mode = 2
 
 [node name="Label2" type="Label" parent="."]
