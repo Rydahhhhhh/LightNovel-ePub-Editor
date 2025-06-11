@@ -27,7 +27,6 @@ func _init(_epub_file: String) -> void:
 		return
 	
 	self._metadata = Metadata.new(self.xml_root)
-	print("DONE")
 	return
 
 func save(destination: String, format := false, overwrite := false) -> int:

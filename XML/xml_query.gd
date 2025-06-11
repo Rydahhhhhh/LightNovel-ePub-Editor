@@ -14,7 +14,7 @@ var _match_text: bool:
 		return self.text_content != null
 
 ## [b]Note:[/b] [param tag] and [param text] are [b]not[/b] typed because typed variables aren't nullable.[br]
-## [b]Written on stable version 4.3 this behavior may change in the future. [/b]
+## [b]Written on stable version 4.4 this behavior may change in the future. [/b]
 func _init(
 	_tag: Variant, 
 	_text_content: Variant = null, 
