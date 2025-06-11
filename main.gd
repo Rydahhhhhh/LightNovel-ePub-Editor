@@ -8,6 +8,8 @@ var save_location: set = set_save_location
 @onready var save_dialog = FileDialog.new()
 
 func _ready() -> void:
+	book = Epub.new("D:\\My Programs\\Godot\\ln-epub-formatter\\Victoria of Many Faces - Volume 2 [Yen Press].epub")
+	return
 	for dialog in [self.select_dialog, self.save_dialog]:
 		dialog.set_use_native_dialog(true)
 		

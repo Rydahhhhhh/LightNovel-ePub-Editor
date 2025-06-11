@@ -4,79 +4,87 @@ class_name Metadata extends RefCounted
 # Although an Opf file is formatted as xml which uses the term 'node' 
 # in the context of epub parsing I'm prefering to use the term 'element'
 # see https://www.w3.org/TR/epub-33
+enum CARDINALITY {ONLY_ONE}
+
+const REQUIRED_ELEMENTS = ["dc:identifier", "dc:title", "dc:language"]
 
 const ELEMENT_CLASSES_BY_TAG := {
-	"dc:identifier": _BaseElement,
+	#"dc:identifier": _BaseElement,
 	"dc:title": _Title,
-	"dc:language": _BaseElement,
-	"dc:contributor": _BaseElement,
-	"dc:coverage": _BaseElement,
-	"dc:creator": _BaseElement,
-	"dc:date": _BaseElement,
-	"dc:format": _BaseElement,
-	"dc:publisher": _BaseElement,
-	"dc:relation": _BaseElement,
-	"dc:rights": _BaseElement,
-	"dc:source": _BaseElement,
-	"dc:subject": _BaseElement,
-	"dc:type": _BaseElement,
-	"meta": _Meta
+	#"dc:language": _BaseElement,
+	#"dc:contributor": _BaseElement,
+	#"dc:coverage": _BaseElement,
+	#"dc:creator": _BaseElement,
+	#"dc:date": _BaseElement,
+	#"dc:format": _BaseElement,
+	#"dc:publisher": _BaseElement,
+	#"dc:relation": _BaseElement,
+	#"dc:rights": _BaseElement,
+	#"dc:source": _BaseElement,
+	#"dc:subject": _BaseElement,
+	#"dc:type": _BaseElement,
+	#"meta": _Meta
 }
 
 var elements_by_id := {}
 
 var elements_by_tag := {
 	"dc:title": [],
-	"dc:creator": [],
-	"dc:rights": [],
-	"dc:identifier": [],
-	"dc:language": [],
-	"dc:date": [],
-	"dc:publisher": [],
-	"dc:subject": [],
-	"dc:type": [],
-	"dc:source": [],
-	"meta": []
+	#"dc:creator": [],
+	#"dc:rights": [],
+	#"dc:identifier": [],
+	#"dc:language": [],
+	#"dc:date": [],
+	#"dc:publisher": [],
+	#"dc:subject": [],
+	#"dc:type": [],
+	#"dc:source": [],
+	#"meta": []
 }
 
 var xml_metadata: XMLTree
+
+var elem_title: _Title
 
 func _init(root: XMLTree) -> void:
 	self.xml_metadata = root.query_selector(XMLQuery.new("metadata"))
 	
 	for element in self.xml_metadata.children:
 		if element.tag in self.elements_by_tag:
-			var metadata_element: _BaseElement = ELEMENT_CLASSES_BY_TAG[element.tag].new(element)
-			self.elements_by_tag[element.tag].append(metadata_element)
-		
-			if element.attributes.has("id"):
-				var element_id: String = element.attributes.get("id")
-				assert(not self.elements_by_id.has(element_id))
-				self.elements_by_id[element_id] = metadata_element
+			self._add_element(element)
 		else:
 			push_error("Unknown tag")
 	
-	for meta_element: _BaseElement in self.elements_by_tag["meta"]:
-		if meta_element.element.attributes.has("refines"):
-			var refines: String = meta_element.element.attributes["refines"]
-			if refines.begins_with("#"):
-				refines = refines.substr(1)
-			
-			if self.elements_by_id.has(refines):
-				var refined_element: _BaseElement = self.elements_by_id[refines]
-				refined_element.attach_refine(meta_element)
-			else:
-				push_error("refining nothing")
+	#for meta_element: _BaseElement in self.elements_by_tag["meta"]:
+		#if meta_element.element.attributes.has("refines"):
+			#var refines: String = meta_element.element.attributes["refines"]
+			#if refines.begins_with("#"):
+				#refines = refines.substr(1)
+			#
+			#if self.elements_by_id.has(refines):
+				#var refined_element: _BaseElement = self.elements_by_id[refines]
+				#refined_element.attach_refine(meta_element)
+			#else:
+				#push_error("refining nothing")
 	print('what')
+	return 
 
+func _add_element(xml_element) -> void:
+	var tag = xml_element.tag
+	var element_class = ELEMENT_CLASSES_BY_TAG[tag]
+	var metadata_element = element_class.new(xml_element)
+	
+	self.elements_by_tag[tag].append(metadata_element)
+	return
 
-class _BaseElement extends RefCounted:
-	static var element_attributes: Array: get = _get_element_attributes
-	static func _get_element_attributes() -> Array:
-		return []
-
-	var element: XMLTree
-	var refiners := {}
+class _Title extends RefCounted:
+	var Cardinality = Metadata.CARDINALITY.ONLY_ONE
+	
+	var attributes = [
+		{"name": "dir", "optional": true},
+		{"name": "id", "optional": true},
+		{"name": "xml:lang", "optional": true}
+	]
 	
 	func _init(_element: XMLTree) -> void:
 		self.element = _element
@@ -84,50 +92,8 @@ class _BaseElement extends RefCounted:
 	
 	func _to_string() -> String:
 		return str(self.element)
-	
-	func attach_refine(meta_element: _BaseElement):
-		var refine_property: Variant  = meta_element.get("property")
-		if refine_property == null:
-			push_error("idk")
-			return
-		
-		var id_as_refine = func() -> String: 
-			assert(self.id is String)
-			return "#" + self.id
-		self.set(refine_property, meta_element)
-		#self[refine_property] = meta_element
-		return
-	
-	func _get(property: StringName) -> Variant:
-		if property in self._get_element_attributes():
-			return self.element.attributes[property]
-		return 
 
 
-class _DublinCore extends _BaseElement:
-	const optional_element = [
-		"dc:contributor",	"dc:coverage",	"dc:creator",
-		"dc:date",			"dc:format",	"dc:publisher",
-		"dc:relation",		"dc:rights",	"dc:source",
-		"dc:subject",		"dc:type"
-	]
-	
-	static func _get_element_attributes() -> Array:
-		return super() + ["dir", "id", "refines"]
-
-class _Identifier extends _DublinCore:
-	pass
-
-class _Title extends _DublinCore:
-	static func _get_element_attributes() -> Array:
-		return super() + ["xml:lang"]
-
-class _Language extends _DublinCore:
-	pass
-
-class _Meta extends _BaseElement:
-	static func _get_element_attributes() -> Array:
-		return super() + ["dir", "id", "property", "refines", "scheme", "xml:lang"]
 
 
 func format() -> void:
@@ -219,3 +185,47 @@ func format() -> void:
 	#self.xml_metadata.add_comment("Unsorted", i)
 	
 	return
+
+#class _BaseElement extends RefCounted:
+	#func _get_element_attributes() -> Array:
+		#return []
+#
+	#var element: XMLTree
+	#var refiners := {}
+	#
+	#func _init(_element: XMLTree) -> void:
+		#self.element = _element
+		#return
+	#
+	#func _to_string() -> String:
+		#return str(self.element)
+	#
+	#func attach_refine(meta_element: _BaseElement):
+		#var refine_property: Variant  = meta_element.get("property")
+		#if refine_property == null:
+			#push_error("idk")
+			#return
+		#
+		#var id_as_refine = func() -> String: 
+			#assert(self.id is String)
+			#return "#" + self.id
+		#self.refiners[refine_property] = meta_element
+		#return
+	#
+	#func _get(property: StringName) -> Variant:
+		#if property in self._get_element_attributes():
+			#return self.element.attributes[property]
+		#return 
+#
+#class _DublinCore extends _BaseElement:
+	#func _get_element_attributes() -> Array:
+		#return super() + ["dir", "id"]
+#
+#class _Identifier extends _DublinCore:
+	#pass
+#class _Language extends _DublinCore:
+	#pass
+#
+#class _Meta extends _BaseElement:
+	#func _get_element_attributes() -> Array:
+		#return super() + ["dir", "id", "property", "refines", "scheme", "xml:lang"]

@@ -8,18 +8,18 @@ var _metadata: Metadata
 
 # I wish there was a better way to add autocompletion
 var title: String: get = _get_title, set = _set_title
-var title_sort: String: get = _get_title_sort, set = _set_title_sort
-var creators: Array: get = _get_creators
-var series: String: get = _get_series, set = _set_series
-var series_index: String: get = _get_series_index, set = _set_series_index
-var description: String: get = _get_description, set = _set_description
-var genres: Array: get = _get_genres
-var language: String: get = _get_language, set = _set_language
-var publicationDate: String: get = _get_publicationDate, set = _set_publicationDate
-var collections: Array: get = _get_collections
-var rights: String: get = _get_rights, set = _set_rights
-var lastModified: String: get = _get_lastModified, set = _set_lastModified
-var identifier: String: get = _get_identifier, set = _set_identifier
+#var title_sort: String: get = _get_title_sort, set = _set_title_sort
+#var creators: Array: get = _get_creators
+#var series: String: get = _get_series, set = _set_series
+#var series_index: String: get = _get_series_index, set = _set_series_index
+#var description: String: get = _get_description, set = _set_description
+#var genres: Array: get = _get_genres
+#var language: String: get = _get_language, set = _set_language
+#var publicationDate: String: get = _get_publicationDate, set = _set_publicationDate
+#var collections: Array: get = _get_collections
+#var rights: String: get = _get_rights, set = _set_rights
+#var lastModified: String: get = _get_lastModified, set = _set_lastModified
+#var identifier: String: get = _get_identifier, set = _set_identifier
 
 func _init(_epub_file: String) -> void:
 	self.epub_file = _epub_file
@@ -92,10 +92,10 @@ func _to_string() -> String:
 	return str(self._metadata.node)
 
 func _get_title() -> String:
-	return self._metadata.title.value
+	return self._metadata.elements_by_tag["dc:title"][0].element.text_content
 
 func _set_title(to: String) -> void:
-	self._metadata.title.value = to
+	self._metadata.elements_by_tag["dc:title"][0].element.text_content = to
 	return
 
 func _get_series() -> String:
