@@ -27,10 +27,6 @@ gdscript/warnings/unsafe_call_argument=1
 
 window/subwindows/embed_subwindows=false
 
-[editor_plugins]
-
-enabled=PackedStringArray("res://addons/HTTPManager/plugin.cfg")
-
 [rendering]
 
 renderer/rendering_method="gl_compatibility"
