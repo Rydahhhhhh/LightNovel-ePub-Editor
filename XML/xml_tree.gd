@@ -48,7 +48,7 @@ func _init(_parent: XMLTree = null, _tag: String = "", _text_cotent := "", _attr
 	
 	# TODO move this outside of xml_tree 
 	if _attributes.has("refines"):
-		var refines_str: String = attributes["refines"]
+		var refines_str: String = _attributes["refines"]
 		if not refines_str.begins_with("#"):
 			refines_str = "#" + refines_str
 		

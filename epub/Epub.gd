@@ -27,9 +27,16 @@ func _init(_epub_file: String) -> void:
 		return
 	
 	self._metadata = Metadata.new(self.xml_root)
+	print(self._metadata.issues)
 	return
 
+func can_save() -> bool:
+	return len(self._metadata.issues) == 0
+
 func save(destination: String, format := false, overwrite := false) -> int:
+	if not self.can_save():
+		return ERR_PARSE_ERROR
+	
 	if not overwrite and FileAccess.file_exists(destination):
 		return ERR_ALREADY_EXISTS
 	
